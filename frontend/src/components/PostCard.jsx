@@ -20,7 +20,7 @@ export default function PostCard({ post, onDelete }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const { showAlert } = useAlert();
   const { showConfirm } = useConfirm();
-  
+
   const currentUsername = getUsername();
   const currentUserId = parseInt(getUserId());
   const dropdownRef = useRef(null);
@@ -33,7 +33,7 @@ export default function PostCard({ post, onDelete }) {
       // Always update the counts for everyone
       setLikesCount(socketLikeData.likesCount);
       setDislikesCount(socketLikeData.dislikesCount);
-      
+
       // Only update userLikeType if this is the user who performed the action
       if (socketLikeData.userId === currentUserId) {
         setUserLikeType(socketLikeData.userLikeType);
@@ -105,7 +105,7 @@ export default function PostCard({ post, onDelete }) {
       cancelText: 'Cancel',
       type: 'danger'
     });
-    
+
     if (confirmed) {
       onDelete();
     }
@@ -116,39 +116,39 @@ export default function PostCard({ post, onDelete }) {
     // Check if user is banned before allowing like action
     const actionAllowed = await isActionAllowed('like');
     if (!actionAllowed) return;
-    
+
     if (isLiking) return; // Prevent double-clicks
-    
+
     setIsLiking(true);
-    
+
     // Add a minimum delay between requests (debounce)
     setTimeout(() => setIsLiking(false), 1000); // 1 second cooldown
-    
+
     // Optimistic update
     const isCurrentlyActive = userLikeType === likeType;
     const newUserLikeType = isCurrentlyActive ? null : likeType;
-    
+
     // Calculate optimistic counts
     let newLikesCount = likesCount;
     let newDislikesCount = dislikesCount;
-    
+
     if (userLikeType === 'like') {
       newLikesCount -= 1;
     } else if (userLikeType === 'dislike') {
       newDislikesCount -= 1;
     }
-    
+
     if (newUserLikeType === 'like') {
       newLikesCount += 1;
     } else if (newUserLikeType === 'dislike') {
       newDislikesCount += 1;
     }
-    
+
     // Update UI immediately
     setLikesCount(newLikesCount);
     setDislikesCount(newDislikesCount);
     setUserLikeType(newUserLikeType);
-    
+
     try {
       const response = await fetch(`/api/posts/${post.id}/like`, {
         method: 'POST',
@@ -158,21 +158,21 @@ export default function PostCard({ post, onDelete }) {
         },
         body: JSON.stringify({ likeType })
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to update like');
       }
-      
+
       const result = await response.json();
-      
+
       // Update with server response (in case of discrepancies)
       setLikesCount(result.likesCount);
       setDislikesCount(result.dislikesCount);
       setUserLikeType(result.userLikeType);
-      
+
     } catch (error) {
       console.error('Error updating like:', error);
-      
+
       // Revert optimistic update on error
       setLikesCount(post.likesCount || 0);
       setDislikesCount(post.dislikesCount || 0);
@@ -184,25 +184,25 @@ export default function PostCard({ post, onDelete }) {
     <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-4 bg-white dark:bg-gray-800 max-w-4xl max-h-4xl">
       <div className="flex items-center justify-between mb-2">
         <Link to={`/profile/${post.author?.id}`} className="flex items-center mb-2 gap-2">
-          <img 
-            src={post.author?.avatar ? 
-              (post.author.avatar.startsWith('http') ? post.author.avatar : `${post.author.avatar}`) 
+          <img
+            src={post.author?.avatar ?
+              post.author.avatar
               : '/user-avatar.png'
-            } 
-            alt="" 
-            className="w-10 h-10 rounded-full object-cover" 
+            }
+            alt=""
+            className="w-10 h-10 rounded-full object-cover"
           />
           <div className="flex flex-col">
             <span className="font-semibold text-gray-900 dark:text-white">
-              {post.author?.firstName && post.author?.lastName 
-                ? `${post.author.firstName} ${post.author.lastName}` 
+              {post.author?.firstName && post.author?.lastName
+                ? `${post.author.firstName} ${post.author.lastName}`
                 : post.author?.firstName || post.author?.username || 'Unknown User'
               }
             </span>
             <span className="text-sm text-gray-500 dark:text-gray-400">@{post.author?.username || '[Deleted]'}</span>
           </div>
         </Link>
-        
+
         {/* Three dots menu */}
         <div className="relative" ref={dropdownRef}>
           <button
@@ -212,7 +212,7 @@ export default function PostCard({ post, onDelete }) {
           >
             <FaEllipsisV size={16} />
           </button>
-          
+
           {showDropdown && (
             <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
               <div className="py-1">
@@ -241,10 +241,10 @@ export default function PostCard({ post, onDelete }) {
       <p className="text-gray-800 dark:text-gray-200" dangerouslySetInnerHTML={{ __html: post.content }}></p>
       <span className="text-xm text-gray-500 dark:text-gray-400">Posted on {new Date(post.createdAt).toLocaleDateString('en-CA')}</span>
       {post.imageUrl && (
-        <img 
+        <img
           src={post.imageUrl.startsWith('http') ? post.imageUrl : `${post.imageUrl}`}
-          alt="Post" 
-          className="mt-4 rounded-lg cursor-pointer hover:opacity-90 transition-opacity duration-300 w-full max-h-[600px] object-cover" 
+          alt="Post"
+          className="mt-4 rounded-lg cursor-pointer hover:opacity-90 transition-opacity duration-300 w-full max-h-[600px] object-cover"
           onClick={() => setSelectedImage(post.imageUrl.startsWith('http') ? post.imageUrl : `${post.imageUrl}`)}
         />
       )}
@@ -284,7 +284,7 @@ export default function PostCard({ post, onDelete }) {
           </button>
           <span className="text-sm text-gray-500 dark:text-gray-400">{dislikesCount}</span>
         </div>
-        
+
         {/* Share button */}
         <div className="flex items-center gap-1">
           <button
@@ -301,14 +301,14 @@ export default function PostCard({ post, onDelete }) {
       </div>
 
       {/* Comments Section */}
-      <CommentsSection 
-        postId={post.id} 
-        initialCommentsCount={post.commentsCount || 0} 
+      <CommentsSection
+        postId={post.id}
+        initialCommentsCount={post.commentsCount || 0}
       />
 
       {/* Image Modal */}
       {selectedImage && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center p-4"
           onClick={() => setSelectedImage(null)}
         >

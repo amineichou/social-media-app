@@ -5,14 +5,14 @@ import { getUserId } from '../utils/auth';
 import { useSocket } from '../contexts/SocketContext';
 import { Link } from 'react-router-dom';
 
-const Comment = ({ 
-  comment, 
-  postId, 
-  onReply, 
-  onDelete, 
-  onLike, 
+const Comment = ({
+  comment,
+  postId,
+  onReply,
+  onDelete,
+  onLike,
   isReply = false,
-  depth = 0 
+  depth = 0
 }) => {
   const [showReplies, setShowReplies] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
@@ -24,16 +24,16 @@ const Comment = ({
 
   const handleLike = async () => {
     if (isLiking) return;
-    
+
     setIsLiking(true);
-    
+
     // Optimistic update
     const newLikesCount = userHasLiked ? likesCount - 1 : likesCount + 1;
     const newUserHasLiked = !userHasLiked;
-    
+
     setLikesCount(newLikesCount);
     setUserHasLiked(newUserHasLiked);
-    
+
     try {
       const response = await fetch(`/api/posts/${postId}/comments/${comment.id}/like`, {
         method: 'POST',
@@ -42,24 +42,24 @@ const Comment = ({
           'Content-Type': 'application/json'
         }
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to update like');
       }
-      
+
       const result = await response.json();
-      
+
       // Update with server response
       setLikesCount(result.likesCount);
       setUserHasLiked(result.userHasLiked);
-      
+
       if (onLike) {
         onLike(comment.id, result);
       }
-      
+
     } catch (error) {
       console.error('Error updating comment like:', error);
-      
+
       // Revert optimistic update on error
       setLikesCount(comment.likesCount || 0);
       setUserHasLiked(comment.userHasLiked || false);
@@ -85,7 +85,7 @@ const Comment = ({
     const currentUser = parseInt(currentUserId);
     const commentUserId = parseInt(comment.userId);
     const commentAuthorId = parseInt(comment.author?.id);
-    
+
     console.log('Delete check:', {
       currentUserId,
       currentUser,
@@ -97,7 +97,7 @@ const Comment = ({
       match2: currentUser === commentAuthorId,
       canDelete: currentUser && (currentUser === commentUserId || currentUser === commentAuthorId)
     });
-    
+
     return currentUser && (currentUser === commentUserId || currentUser === commentAuthorId);
   };
 
@@ -108,10 +108,8 @@ const Comment = ({
       {/* Avatar */}
       <Link to={`/profile/${comment.author?.id}`} className="flex-shrink-0">
         <img
-          src={comment.author?.avatar ? 
-            (comment.author.avatar.startsWith('http') ? 
-              comment.author.avatar : 
-              `/${comment.author.avatar}`) 
+          src={comment.author?.avatar ?
+            comment.author.avatar
             : '/user-avatar.png'
           }
           alt={`${comment.author?.firstName} ${comment.author?.lastName}`}
@@ -138,13 +136,12 @@ const Comment = ({
           <button
             onClick={handleLike}
             disabled={isLiking}
-            className={`text-xs font-semibold hover:underline transition-colors ${
-              userHasLiked ? 'text-red-500' : 'text-gray-600 dark:text-gray-400 hover:text-red-500'
-            }`}
+            className={`text-xs font-semibold hover:underline transition-colors ${userHasLiked ? 'text-red-500' : 'text-gray-600 dark:text-gray-400 hover:text-red-500'
+              }`}
           >
             {userHasLiked ? 'Unlike' : 'Like'}
           </button>
-          
+
           {!isReply && depth < 3 && (
             <button
               onClick={handleReply}
@@ -153,11 +150,11 @@ const Comment = ({
               Reply
             </button>
           )}
-          
+
           <span className="text-xs text-gray-500 dark:text-gray-400">
             {timeAgo}
           </span>
-          
+
           {likesCount > 0 && (
             <div className="flex items-center space-x-1">
               <FaHeart size={12} className="text-red-500" />
@@ -173,7 +170,7 @@ const Comment = ({
             >
               <FaEllipsisH size={14} />
             </button>
-            
+
             {showActions && (
               <div className="absolute right-0 top-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-10 min-w-[120px]">
                 {canDelete() && (
@@ -202,7 +199,7 @@ const Comment = ({
                 {showReplies ? 'Hide' : 'View'} {comment.replies.length} {comment.replies.length === 1 ? 'reply' : 'replies'}
               </span>
             </button>
-            
+
             {showReplies && (
               <div className="mt-2">
                 {comment.replies.map((reply) => (

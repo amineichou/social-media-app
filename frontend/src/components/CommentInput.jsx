@@ -39,7 +39,9 @@ const CommentInput = ({
         if (response.ok) {
           const userData = await response.json();
           if (userData.avatar) {
-            setUserAvatar(`/${userData.avatar}`);
+            setUserAvatar(userData.avatar);
+            console.log(userData.avatar)
+
           }
         }
       } catch (error) {
