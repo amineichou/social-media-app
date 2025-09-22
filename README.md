@@ -49,11 +49,11 @@ docker compose up
 
 This will:
 
-- Build the backend image
+- Build the frontend, backend and nginx images
 
-- Start the SQLite database in a volume
+- Start all required containers
 
-- Expose the backend API on http://localhost
+- Make the app accessible at http://localhost
 
 3. (Optional) Run in Detached Mode
 ```sh
