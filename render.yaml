@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: backend
+    env: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: DATABASE_FILE
+        value: /opt/render/project/db/db.sqlite
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PORT
+        value: 4000
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_EMAIL
+        value: admin@admin.com
+      - key: ADMIN_PASSWORD
+        value: admin@1234!
+      - key: ADMIN_FIRST_NAME
+        value: admin
+      - key: ADMIN_LAST_NAME
+        value: admin
+    disk:
+      name: db
+      mountPath: /opt/render/project/db
+      sizeGB: 1
+
+  - type: web
+    name: frontend
+    env: docker
+    plan: free
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+
+  - type: web
+    name: nginx
+    env: docker
+    plan: free
+    dockerfilePath: ./nginx/Dockerfile
+    dockerContext: ./nginx
