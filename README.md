@@ -65,3 +65,9 @@ Stop containers with:
 ```sh
 docker compose down
 ```
+
+![screenshot](assets/1.png "")
+![screenshot](assets/2.png "")
+![screenshot](assets/3.png "")
+![screenshot](assets/4.png "")
+![screenshot](assets/5.png "")
