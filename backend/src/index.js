@@ -374,7 +374,7 @@ app.get("/user-avatar.png", (req, res) => {
 });
 
 
-const PORT = process.env.PORT || 4000;
+const PORT = 4000;
 
 async function start() {
   try {

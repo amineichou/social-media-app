@@ -53,7 +53,7 @@ This will:
 
 - Start the SQLite database in a volume
 
-- Expose the backend API on http://localhost:4000
+- Expose the backend API on http://localhost
 
 3. (Optional) Run in Detached Mode
 ```sh
